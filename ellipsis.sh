@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
 packages=(
-    katharinegillis/system
-    katharinegillis/chocolatey
     katharinegillis/windowsterminal
+    katharinegillis/vcxsrv
+    katharinegillis/firefox
+    katharinegillis/sublime
+    katharinegillis/dockerdesktop
+    katharinegillis/system
     katharinegillis/git
     katharinegillis/docker
     katharinegillis/utils
@@ -11,8 +14,6 @@ packages=(
     katharinegillis/php
     katharinegillis/phpstorm
     katharinegillis/dev
-    katharinegillis/vcxsrv
-    katharinegillis/firefox
 );
 
 # Store the current package name because it changes in certain circumstances
