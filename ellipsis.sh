@@ -1,20 +1,28 @@
 #!/usr/bin/env bash
 
-packages=(
-    katharinegillis/windowsterminal
-    katharinegillis/vcxsrv
-    katharinegillis/firefox
-    katharinegillis/sublime
-    katharinegillis/dockerdesktop
-    katharinegillis/system
-    katharinegillis/git
-    katharinegillis/docker
-    katharinegillis/utils
-    katharinegillis/node
-    katharinegillis/php
-    katharinegillis/phpstorm
-    katharinegillis/dev
-);
+KERNEL_VERSION=`cat /proc/version`
+
+if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
+    packages=(
+        katharinegillis/windowsterminal
+        katharinegillis/vcxsrv
+        katharinegillis/firefox
+        katharinegillis/sublime
+        katharinegillis/dockerdesktop
+        katharinegillis/system
+        katharinegillis/git
+        katharinegillis/docker
+        katharinegillis/utils
+        katharinegillis/node
+        katharinegillis/php
+        katharinegillis/phpstorm
+        katharinegillis/dev
+    );
+else
+    packages=(
+        katharinegillis/git
+    );
+fi
 
 # Store the current package name because it changes in certain circumstances
 packageName=$PKG_NAME;
