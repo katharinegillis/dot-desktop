@@ -20,6 +20,8 @@ if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
     );
 else
     packages=(
+        katharinegillis/common
+        katharinegillis/vim
         katharinegillis/git
     );
 fi
