@@ -23,6 +23,7 @@ else
         katharinegillis/common
         katharinegillis/vim
         katharinegillis/git
+        kathrinegillis/phpstorm
     );
 fi
 
