@@ -33,6 +33,9 @@ packageName=$PKG_NAME;
 pkg.install() {
     # Install the packages
     installUpdatePackages
+
+    # Summarize the installs.
+    printSummary
 }
 
 pkg.link() {
@@ -57,8 +60,8 @@ pkg.pull() {
     # Install new packages and update existing ones
     installUpdatePackages
 
-    # Inform user of sourcing their bash to refresh their profile in case it changed
-    echo -e "\e[33mPlease run \"source .bash_profile\" to refresh profile\e[0m"
+    # Summarize the updates.
+    printSummary
 }
 
 pkg.uninstall() {
@@ -103,4 +106,65 @@ removePackages() {
             $ELLIPSIS_PATH/bin/ellipsis uninstall $package;
         fi
     done
+}
+
+printSummary() {
+    echo -e "\n\e[32mSUMMARY\e[0m\n"
+
+    installed=0
+    updated=0
+    uninstalled=0
+    errored=0
+    warned=0
+    unchanged=0
+
+    if [ -f "$HOME/ellipsis_installed.log" ]; then
+        installed=$(cat "$HOME/ellipsis_installed.log" | wc -l)
+        rm -rf "$HOME/ellipsis_installed.log"
+    fi
+    if [ -f "$HOME/ellipsis_updated.log" ]; then
+        updated=$(cat "$HOME/ellipsis_updated.log" | wc -l)
+        rm -rf "$HOME/ellipsis_updated.log"
+    fi
+    if [ -f "$HOME/ellipsis_uninstalled.log" ]; then
+        uninstalled=$(cat "$HOME/ellipsis_uninstalled.log" | wc -l)
+        rm -rf "$HOME/ellipsis_uninstalled.log"
+    fi
+    if [ -f "$HOME/ellipsis_errored.log" ]; then
+        errored=$(cat "$HOME/ellipsis_errored.log" | wc -l)
+        rm -rf "$HOME/ellipsis_errored.log"
+    fi
+    if [ -f "$HOME/ellipsis_warned.log" ]; then
+        warned=$(cat "$HOME/ellipsis_warned.log" | wc -l)
+        rm -rf "$HOME/ellipsis_warned.log"
+    fi
+    if [ -f "$HOME/ellipsis_unchanged.log" ]; then
+        unchanged=$(cat "$HOME/ellipsis_unchanged.log" | wc -l)
+        rm -rf "$HOME/ellipsis_unchanged.log"
+    fi
+
+    echo -e "\e[32m$installed packages installed"
+    echo -e "\e[32m$updated packages updated"
+    echo -e "\e[32m$uninstalled packages uninstalled\n"
+    echo -e "\e[0m$unchanged packages unchanged\n"
+    echo -e "\e[31m$errored packages errored"
+    echo -e "\e[33m$warned packages issued warnings\n\e[0m"
+
+    if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
+        echo "If you are installing for the first time, the above counts may be wrong due to having to restart the installation process after a reboot.\n"
+    fi
+
+    if [ -f "$HOME/ellipsis_errors.log" ]; then
+        cat "$HOME/ellipsis_errors.log"
+        rm -rf "$HOME/ellipsis_errors.log"
+    fi
+
+    if [ -f "$HOME/ellipsis_warnings.log" ]; then
+        cat "$HOME/ellipsis_warnings.log"
+        rm -rf "$HOME/ellipsis_warnings.log"
+    fi
+
+    if [ "$installed" != "0" ] || [ "$updated" != "0" ] || [ "$uninstalled" != "0" ]; then
+        echo -e "\e[33mPlease run \"source .bash_profile\" to refresh profile\e[0m"
+    fi
 }
