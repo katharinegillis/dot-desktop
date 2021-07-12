@@ -6,7 +6,7 @@ if [ ! -f "$HOME/.ellipsis-desktop-mode" ]; then
     read var
     if [ "$var" != "home" ] && [ "$var" != "work" ]; then
         echo "Invalid selection - please enter home or work on your next attempt. Exiting."
-        exit
+        exit 1
     fi
 
     echo "$var" > "$HOME/.ellipsis-desktop-mode"
