@@ -1,9 +1,32 @@
 #!/usr/bin/env bash
 
-KERNEL_VERSION=`cat /proc/version`
+MODE="home"
+if [ ! -f "$HOME/.ellipsis-desktop-mode" ]; then
+    echo "Install home dotfiles or work dotfiles? [home/work]: "
+    read var
+    if [ "$var" != "home" ] && [ "$var" != "work" ]; then
+        echo "Invalid selection - please enter home or work on your next attempt. Exiting."
+        exit
+    fi
 
-if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
+    echo "$var" > "$HOME/.ellipsis-desktop-mode"
+    MODE="$var"
+else
+    MODE=$(cat "$HOME/.ellipsis-desktop-mode")
+fi
+
+KERNEL_VERSION=$(cat /proc/version)
+
+if [ "$MODE" == "home" ]; then
     packages=(
+        katharinegillis/common
+        katharinegillis/vim
+        katharinegillis/git
+        kathrinegillis/phpstorm
+    );
+else
+    packages=(
+        katharinegillis/common
         katharinegillis/windowsterminal
         katharinegillis/vcxsrv
         katharinegillis/firefox
@@ -17,13 +40,6 @@ if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
         katharinegillis/php
         katharinegillis/phpstorm
         katharinegillis/dev
-    );
-else
-    packages=(
-        katharinegillis/common
-        katharinegillis/vim
-        katharinegillis/git
-        kathrinegillis/phpstorm
     );
 fi
 
@@ -80,9 +96,17 @@ installUpdatePackages() {
         if [ $? -ne 0 ]; then
             echo -e "\e[32mInstalling $package...\e[0m"
             $ELLIPSIS_PATH/bin/ellipsis install $package;
+
+            if [ "$?" == "1" ]; then
+                exit 1
+            fi
         else
             echo -e "\e[32mUpdating $package...\e[0m"
             $ELLIPSIS_PATH/bin/ellipsis pull ${packageParsed[1]};
+
+            if [ "$?" == "1" ]; then
+                exit 1
+            fi
         fi
     done
 
@@ -93,6 +117,10 @@ installUpdatePackages() {
         if [ $? -ne 0 ] && [[ "$name" != "$packageName" ]]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
             $ELLIPSIS_PATH/bin/ellipsis uninstall $package;
+
+            if [ "$?" == "1" ]; then
+                exit 1
+            fi
         fi
     done
 }
@@ -104,6 +132,10 @@ removePackages() {
         if [ $? = 0 ]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
             $ELLIPSIS_PATH/bin/ellipsis uninstall $package;
+
+            if [ "$?" == "1" ]; then
+                exit 1
+            fi
         fi
     done
 }
@@ -116,7 +148,6 @@ printSummary() {
     uninstalled=0
     errored=0
     warned=0
-    unchanged=0
 
     if [ -f "$HOME/ellipsis_installed.log" ]; then
         installed=$(cat "$HOME/ellipsis_installed.log" | wc -l)
@@ -138,15 +169,10 @@ printSummary() {
         warned=$(cat "$HOME/ellipsis_warned.log" | wc -l)
         rm -rf "$HOME/ellipsis_warned.log"
     fi
-    if [ -f "$HOME/ellipsis_unchanged.log" ]; then
-        unchanged=$(cat "$HOME/ellipsis_unchanged.log" | wc -l)
-        rm -rf "$HOME/ellipsis_unchanged.log"
-    fi
 
     echo -e "\e[32m$installed packages installed"
     echo -e "\e[32m$updated packages updated"
     echo -e "\e[32m$uninstalled packages uninstalled\n"
-    echo -e "\e[0m$unchanged packages unchanged\n"
     echo -e "\e[31m$errored packages errored"
     echo -e "\e[33m$warned packages issued warnings\n\e[0m"
 
