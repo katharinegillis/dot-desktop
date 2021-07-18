@@ -124,4 +124,4 @@ if [ ! -f "$HOME/.ellipsisrc" ]; then
 fi
 
 echo "Running the dotfiles..."
-"$HOME/.ellipsis/bin/ellipsis install desktop"
+"$HOME/.ellipsis/bin/ellipsis" install desktop
