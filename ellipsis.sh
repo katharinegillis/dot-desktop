@@ -138,7 +138,7 @@ removePackages() {
         ellipsis.list_packages | grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" 2>&1 > /dev/null;
         if [ $? = 0 ]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis uninstall ${packageParsed[0]};
+            $ELLIPSIS_PATH/bin/ellipsis uninstall ${packageParsed[1]};
 
             if [ "$?" == "1" ]; then
                 exit 1
