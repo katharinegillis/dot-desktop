@@ -22,7 +22,7 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/common
         katharinegillis/vim
         katharinegillis/git
-        kathrinegillis/phpstorm
+        katharinegillis/phpstorm
     );
 else
     packages=(
