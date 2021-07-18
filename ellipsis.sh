@@ -86,6 +86,9 @@ pkg.uninstall() {
 
     # Uninstall self
     hooks.uninstall
+
+    # Summarize the uninstalls.
+    printSummary
 }
 
 installUpdatePackages() {
