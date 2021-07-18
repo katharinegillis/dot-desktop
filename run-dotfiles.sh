@@ -110,7 +110,7 @@ fi
 echo "Checking for ellipsis.sh..."
 if [ ! -d "$HOME/.ellipsis" ]; then
     echo "Installing ellipsis.sh..."
-    curl ellipsis.sh | sh
+    curl https://ellipsis.sh | sh
 fi
 
 echo "Checking for the ellipsis config file..."
@@ -124,4 +124,4 @@ if [ ! -f "$HOME/.ellipsisrc" ]; then
 fi
 
 echo "Running the dotfiles..."
-echo "$HOME/.ellipsis/bin/ellipsis install desktop"
+"$HOME/.ellipsis/bin/ellipsis install desktop"
