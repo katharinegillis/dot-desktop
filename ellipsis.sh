@@ -3,7 +3,7 @@
 MODE="home"
 if [ ! -f "$HOME/.ellipsis-desktop-mode" ]; then
     echo "Install home dotfiles or work dotfiles? [home/work]: "
-    read var
+    read -r var
     if [ "$var" != "home" ] && [ "$var" != "work" ]; then
         echo "Invalid selection - please enter home or work on your next attempt. Exiting."
         exit 1
@@ -20,6 +20,7 @@ KERNEL_VERSION=$(cat /proc/version)
 if [ "$MODE" == "home" ]; then
     packages=(
         katharinegillis/common
+        katharinegillis/system
         katharinegillis/vim
         katharinegillis/git
         katharinegillis/phpstorm
@@ -65,7 +66,7 @@ pkg.pull() {
     deleteSummaryFiles
 
     # Check for updates on git
-    git remote update 2>&1 > /dev/null
+    { git remote update > /dev/null; } 2>&1
     if git.is_behind; then
         # Unlink files
         hooks.unlink
@@ -100,18 +101,18 @@ pkg.uninstall() {
 installUpdatePackages() {
     # Install new packages or update existing ones from the list
     for package in ${packages[*]}; do
-	IFS='/' read -ra packageParsed <<< "$package"
-        ellipsis.list_packages | grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" 2>&1 > /dev/null;
-        if [ $? -ne 0 ]; then
+	    IFS='/' read -ra packageParsed <<< "$package"
+	    ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" > /dev/null; } 2>&1
+        if [ "${PIPESTATUS[1]}" -ne 0 ]; then
             echo -e "\e[32mInstalling $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis install $package;
+            "$ELLIPSIS_PATH/bin/ellipsis" install "$package"
 
             if [ "$?" == "1" ]; then
                 exit 1
             fi
         else
             echo -e "\e[32mUpdating $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis pull ${packageParsed[1]};
+            "$ELLIPSIS_PATH/bin/ellipsis" pull "${packageParsed[1]}"
 
             if [ "$?" == "1" ]; then
                 exit 1
@@ -121,11 +122,11 @@ installUpdatePackages() {
 
     # Uninstall orphaned packages
     for package in $(ellipsis.list_packages); do
-        name=$(pkg.name_from_path $package)
-        echo ${packages[*]} | grep "$name" 2>&1 > /dev/null
-        if [ $? -ne 0 ] && [[ "$name" != "$packageName" ]]; then
+        name=$(pkg.name_from_path "$package")
+        echo "${packages[*]}" | { grep "$name" > /dev/null; } 2>&1
+        if [ "${PIPESTATUS[1]}" -ne 0 ] && [[ "$name" != "$packageName" ]]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis uninstall $package;
+            "$ELLIPSIS_PATH/bin/ellipsis" uninstall "$package"
 
             if [ "$?" == "1" ]; then
                 exit 1
@@ -136,18 +137,17 @@ installUpdatePackages() {
 
 removePackages() {
     # Reverse the list of packages
-    for i in "${packages[@]}"
-    do
+    for i in "${packages[@]}"; do
         reversePackages=("$i" "${reversePackages[@]}")
     done
     
     # Uninstall all installed packages on the list
     for package in ${reversePackages[*]}; do
         IFS='/' read -ra packageParsed <<< "$package"
-        ellipsis.list_packages | grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" 2>&1 > /dev/null;
-        if [ $? = 0 ]; then
+        ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" > /dev/null; } 2>&1
+        if [ "${PIPESTATUS[1]}" -ne 0 ]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis uninstall ${packageParsed[1]};
+            "$ELLIPSIS_PATH/bin/ellipsis" uninstall "${packageParsed[1]}"
 
             if [ "$?" == "1" ]; then
                 exit 1
@@ -192,19 +192,19 @@ printSummary() {
     warned=0
 
     if [ -f "$HOME/ellipsis_installed.log" ]; then
-        installed=$(cat "$HOME/ellipsis_installed.log" | wc -l)
+        installed=$(wc -l < "$HOME/ellipsis_installed.log")
     fi
     if [ -f "$HOME/ellipsis_updated.log" ]; then
-        updated=$(cat "$HOME/ellipsis_updated.log" | wc -l)
+        updated=$(wc -l < "$HOME/ellipsis_updated.log")
     fi
     if [ -f "$HOME/ellipsis_uninstalled.log" ]; then
-        uninstalled=$(cat "$HOME/ellipsis_uninstalled.log" | wc -l)
+        uninstalled=$(wc -l < "$HOME/ellipsis_uninstalled.log")
     fi
     if [ -f "$HOME/ellipsis_errored.log" ]; then
-        errored=$(cat "$HOME/ellipsis_errored.log" | wc -l)
+        errored=$(wc -l < "$HOME/ellipsis_errored.log")
     fi
     if [ -f "$HOME/ellipsis_warned.log" ]; then
-        warned=$(cat "$HOME/ellipsis_warned.log" | wc -l)
+        warned=$(wc -l < "$HOME/ellipsis_warned.log")
     fi
 
     echo -e "\e[32m$installed packages installed"
@@ -214,7 +214,7 @@ printSummary() {
     echo -e "\e[33m$warned packages issued warnings\n\e[0m"
 
     if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
-        echo "If you are installing for the first time, the above counts may be wrong due to having to restart the installation process after a reboot.\n"
+        echo -e "If you are installing for the first time, the above counts may be wrong due to having to restart the installation process after a reboot.\n"
     fi
 
     if [ -f "$HOME/ellipsis_errors.log" ]; then
