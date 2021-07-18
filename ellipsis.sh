@@ -47,6 +47,8 @@ fi
 packageName=$PKG_NAME;
 
 pkg.install() {
+    deleteSummaryFiles
+
     # Install the packages
     installUpdatePackages
 
@@ -60,6 +62,8 @@ pkg.link() {
 }
 
 pkg.pull() {
+    deleteSummaryFiles
+
     # Check for updates on git
     git remote update 2>&1 > /dev/null
     if git.is_behind; then
@@ -81,6 +85,8 @@ pkg.pull() {
 }
 
 pkg.uninstall() {
+    deleteSummaryFiles
+
     # Remove managed packages
     removePackages
 
@@ -150,6 +156,32 @@ removePackages() {
     done
 }
 
+deleteSummaryFiles() {
+    if [ -f "$HOME/ellipsis_installed.log" ]; then
+        rm -rf "$HOME/ellipsis_installed.log"
+    fi
+    if [ -f "$HOME/ellipsis_updated.log" ]; then
+        rm -rf "$HOME/ellipsis_updated.log"
+    fi
+    if [ -f "$HOME/ellipsis_uninstalled.log" ]; then
+        rm -rf "$HOME/ellipsis_uninstalled.log"
+    fi
+    if [ -f "$HOME/ellipsis_errored.log" ]; then
+        rm -rf "$HOME/ellipsis_errored.log"
+    fi
+    if [ -f "$HOME/ellipsis_warned.log" ]; then
+        rm -rf "$HOME/ellipsis_warned.log"
+    fi
+
+    if [ -f "$HOME/ellipsis_errors.log" ]; then
+        rm -rf "$HOME/ellipsis_errors.log"
+    fi
+
+    if [ -f "$HOME/ellipsis_warnings.log" ]; then
+        rm -rf "$HOME/ellipsis_warnings.log"
+    fi
+}
+
 printSummary() {
     echo -e "\n\e[32mSUMMARY\e[0m\n"
 
@@ -161,23 +193,18 @@ printSummary() {
 
     if [ -f "$HOME/ellipsis_installed.log" ]; then
         installed=$(cat "$HOME/ellipsis_installed.log" | wc -l)
-        rm -rf "$HOME/ellipsis_installed.log"
     fi
     if [ -f "$HOME/ellipsis_updated.log" ]; then
         updated=$(cat "$HOME/ellipsis_updated.log" | wc -l)
-        rm -rf "$HOME/ellipsis_updated.log"
     fi
     if [ -f "$HOME/ellipsis_uninstalled.log" ]; then
         uninstalled=$(cat "$HOME/ellipsis_uninstalled.log" | wc -l)
-        rm -rf "$HOME/ellipsis_uninstalled.log"
     fi
     if [ -f "$HOME/ellipsis_errored.log" ]; then
         errored=$(cat "$HOME/ellipsis_errored.log" | wc -l)
-        rm -rf "$HOME/ellipsis_errored.log"
     fi
     if [ -f "$HOME/ellipsis_warned.log" ]; then
         warned=$(cat "$HOME/ellipsis_warned.log" | wc -l)
-        rm -rf "$HOME/ellipsis_warned.log"
     fi
 
     echo -e "\e[32m$installed packages installed"
@@ -192,15 +219,15 @@ printSummary() {
 
     if [ -f "$HOME/ellipsis_errors.log" ]; then
         cat "$HOME/ellipsis_errors.log"
-        rm -rf "$HOME/ellipsis_errors.log"
     fi
 
     if [ -f "$HOME/ellipsis_warnings.log" ]; then
         cat "$HOME/ellipsis_warnings.log"
-        rm -rf "$HOME/ellipsis_warnings.log"
     fi
 
     if [ "$installed" != "0" ] || [ "$updated" != "0" ] || [ "$uninstalled" != "0" ]; then
         echo -e "\e[33mPlease run \"source .bash_profile\" to refresh profile\e[0m"
     fi
+
+    deleteSummaryFiles
 }
