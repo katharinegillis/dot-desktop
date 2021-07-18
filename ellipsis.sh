@@ -126,12 +126,19 @@ installUpdatePackages() {
 }
 
 removePackages() {
+    # Reverse the list of packages
+    for i in "${packages[@]}"
+    do
+        reversePackages=("$i" "${reversePackages[@]}")
+    done
+    
     # Uninstall all installed packages on the list
-    for package in ${packages[*]}; do
-        ellipsis.list_packages | grep "$ELLIPSIS_PACKAGES/$package" 2>&1 > /dev/null;
+    for package in ${reversePackages[*]}; do
+        IFS='/' read -ra packageParsed <<< "$package"
+        ellipsis.list_packages | grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" 2>&1 > /dev/null;
         if [ $? = 0 ]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
-            $ELLIPSIS_PATH/bin/ellipsis uninstall $package;
+            $ELLIPSIS_PATH/bin/ellipsis uninstall ${packageParsed[0]};
 
             if [ "$?" == "1" ]; then
                 exit 1
