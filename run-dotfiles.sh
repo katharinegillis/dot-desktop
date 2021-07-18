@@ -14,8 +14,25 @@ else
     exit 1
 fi
 
+if [ "$SYSTEM" == "wsl" ]; then
+    echo "Checking for chocolatey..."
+    if ! command -v "choco.exe" &> /dev/null; then
+        echo "Is this running from an elevated WSL 2 terminal (started from an admin elevated CMD prompt)? [y/n]"
+        read -r var
+        if [ "$var" == "y" ]; then
+            echo "Installing chocolatey..."
+            cmd.exe /C @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+        elif [ "$var" == "n" ]; then
+            echo "This must be run from an elevated WSL 2 terminal. Please exit this terminal, open CMD as an administrator, and run 'wsl' to get into WSL before restarting this script. Exiting."
+        else
+            echo "Response should be y or n. Exiting."
+            exit 1
+        fi
+    fi
+fi
+
 if [ "$SYSTEM" == "mac" ]; then
-    echo "Checking for a homebrew installation..."
+    echo "Checking for homebrew..."
     if ! command -v "brew" &> /dev/null; then
         echo "Installing homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
