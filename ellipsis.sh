@@ -21,9 +21,13 @@ if [ "$MODE" == "home" ]; then
     packages=(
         katharinegillis/common
         katharinegillis/system
+        katharinegillis/utils
         katharinegillis/vim
         katharinegillis/git
         katharinegillis/phpstorm
+        katharinegillis/docker
+        katharinegillis/node
+        katharinegillis/php
     );
 else
     packages=(
@@ -32,7 +36,7 @@ else
         katharinegillis/vcxsrv
         katharinegillis/firefox
         katharinegillis/sublime
-        katharinegillis/dockerdesktop
+        #katharinegillis/dockerdesktop
         katharinegillis/system
         katharinegillis/git
         katharinegillis/docker
@@ -60,6 +64,29 @@ pkg.install() {
 pkg.link() {
     # Link up the dot files
     fs.link_files files
+
+    # Check for .bashrc loading up the various package profiles
+    if [ ! -f "$HOME/.bash_profile" ]; then
+        touch "$HOME/.bash_profile"
+    fi
+
+    if ! grep -Fxq "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi" "$HOME/.bash_profile"; then
+        {
+            echo ""
+            echo "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi"
+        } >> "$HOME/.bash_profile"
+    fi
+
+    if [ ! -f "$HOME/.bashrc" ]; then
+        touch "$HOME/.bashrc"
+    fi
+
+    if ! grep -Fxq "for f in ~/.bash_profile-*; do source \$f; done" "$HOME/.bashrc"; then
+        {
+            echo ""
+            echo "for f in ~/.bashrc-*; do source \$f; done"
+        } >> "$HOME/.bashrc"
+    fi
 }
 
 pkg.pull() {
@@ -102,7 +129,7 @@ installUpdatePackages() {
     # Install new packages or update existing ones from the list
     for package in ${packages[*]}; do
 	    IFS='/' read -ra packageParsed <<< "$package"
-	    ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" > /dev/null; } 2>&1
+	    ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}\( \|$\)" > /dev/null; } 2>&1
         if [ "${PIPESTATUS[1]}" -ne 0 ]; then
             echo -e "\e[32mInstalling $package...\e[0m"
             "$ELLIPSIS_PATH/bin/ellipsis" install "$package"
@@ -144,7 +171,7 @@ removePackages() {
     # Uninstall all installed packages on the list
     for package in ${reversePackages[*]}; do
         IFS='/' read -ra packageParsed <<< "$package"
-        ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}" > /dev/null; } 2>&1
+        ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}\( \|$\)" > /dev/null; } 2>&1
         if [ "${PIPESTATUS[1]}" -ne 0 ]; then
             echo -e "\e[32mUninstalling $package...\e[0m"
             "$ELLIPSIS_PATH/bin/ellipsis" uninstall "${packageParsed[1]}"
