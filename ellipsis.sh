@@ -28,6 +28,7 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/docker
         katharinegillis/node
         katharinegillis/php
+        katharinegillis/firefox
     );
 else
     packages=(
