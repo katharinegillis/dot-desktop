@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+if [ "$OSTYPE" == "linux-gnu" ]; then
+    KERNEL_VERSION=$(cat /proc/version)
+    if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
+        SYSTEM="wsl"
+    else
+        SYSTEM="linux"
+    fi
+elif [ "$OSTYPE" == "darwin" ]; then
+    SYSTEM="mac"
+else
+    echo "Unknown operating system ($OSTYPE). Exiting."
+    exit 1
+fi
+
+if [ -d "$HOME/.ellipsis/packages/desktop" ]; then
+    echo "Updating dotfiles..."
+    "$HOME/.ellipsis/bin/ellipsis" pull desktop
+else
+    if [ "$SYSTEM" == "wsl" ]; then
+        echo "Checking for chocolatey..."
+        if ! command -v "choco.exe" &> /dev/null; then
+            echo "Is this running from an elevated WSL 2 terminal (started from an admin elevated CMD prompt)? [y/n]"
+            read -r var
+            if [ "$var" == "y" ]; then
+                echo "Installing chocolatey..."
+                cmd.exe /C @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+            elif [ "$var" == "n" ]; then
+                echo "This must be run from an elevated WSL 2 terminal. Please exit this terminal, open CMD as an administrator, and run 'wsl' to get into WSL before restarting this script. Exiting."
+            else
+                echo "Response should be y or n. Exiting."
+                exit 1
+            fi
+        fi
+    fi
+
+    if [ "$SYSTEM" == "mac" ]; then
+        echo "Checking for homebrew..."
+        if ! command -v "brew" &> /dev/null; then
+            echo "Installing homebrew..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+    fi
+
+    echo "Checking for curl..."
+    if ! command -v "curl" &> /dev/null; then
+        echo "Installing curl..."
+        sudo apt-get install curl
+    fi
+
+    echo "Checking for a git installation..."
+    if ! command -v "git" &> /dev/null; then
+        echo "Installing git..."
+        if [ "$SYSTEM" == "wsl" ] || [ "$SYSTEM" == "linux" ]; then
+            sudo apt-get install git
+        else
+            brew install git
+        fi
+
+        echo "Setting autocrlf to false in git..."
+        git config --global core.autocrlf false
+    fi
+
+    echo "Do you have a private key already? [y/n]"
+    var=""
+    read -r var
+    if [ "$var" == "y" ]; then
+        echo "Please enter the full path to your private key:"
+        var=""
+        read -r var
+        if [ ! -f "$var" ]; then
+            echo "Unknown file. Exiting."
+            exit 1
+        else
+            PRIVATE_KEY_PATH="$var"
+        fi
+    elif [ "$var" == "n" ]; then
+        echo "Please enter the email to tag your private key with:"
+        var=""
+        read -r var
+        if [ "$var" == "" ]; then
+            echo "No email entered. Exiting."
+            exit 1
+        else
+            SSH_KEY_EMAIL=$var
+        fi
+        echo "Creating a new private key, please follow the prompts..."
+        ssh-keygen -t ed25519 -C "$SSH_KEY_EMAIL"
+
+        echo "Please enter the full path to your private key:"
+        var=""
+        read -r var
+        if [ ! -f "$var" ]; then
+            echo "Unknown file. Exiting."
+            exit 1
+        else
+            PRIVATE_KEY_PATH="$var"
+        fi
+    else
+        echo "Response should be y or n. Exiting."
+        exit 1
+    fi
+
+    echo "Has your private key been added to your Github account? [y/n]"
+    var=""
+    read -r var
+    if [ "$var" == n ]; then
+        echo "Please follow the steps at https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account and press any key to continue once you are finished."
+        read -r var
+    elif [ "$var" != y ]; then
+        echo "Response should be y or n. Exiting."
+        exit 1
+    fi
+
+    echo "Configuring ssh for github..."
+    if [ ! -f "$HOME/.ssh/config" ]; then
+        touch "$HOME/.ssh/config"
+        chmod 0600 "$HOME/.ssh/config"
+    fi
+
+    if ! grep -Fxq "Host github.com" "$HOME/.ssh/config"; then
+        {
+            echo ""
+            echo "Host github.com"
+            echo "  User git"
+            echo "  IdentityFile $PRIVATE_KEY_PATH"
+        } >> "$HOME/.ssh/config"
+    fi
+
+    echo "Checking for ellipsis.sh..."
+    if [ ! -d "$HOME/.ellipsis" ]; then
+        echo "Installing ellipsis.sh..."
+        curl https://ellipsis.sh | sh
+    fi
+
+    echo "Checking for the ellipsis config file..."
+    if [ ! -f "$HOME/.ellipsisrc" ]; then
+        echo "Creating the ellipsis config file..."
+        touch "$HOME/.ellipsisrc"
+        {
+            echo "export ELLIPSIS_USER=katharinegillis"
+            echo "export ELLIPSIS_PROTO=ssh"
+        } >> "$HOME/.ellipsisrc"
+    fi
+
+    echo "Running the dotfiles..."
+    "$HOME/.ellipsis/bin/ellipsis" install desktop
+fi

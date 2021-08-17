@@ -65,6 +65,11 @@ pkg.link() {
     # Link up the dot files
     fs.link_files files
 
+    if [ ! -d "$HOME/bin" ]; then
+        mkdir "$HOME/bin"
+    fi
+    fs.link_rfiles "$PKG_PATH/bin" "$HOME/bin"
+
     # Check for .bashrc loading up the various package profiles
     if [ ! -f "$HOME/.bash_profile" ]; then
         touch "$HOME/.bash_profile"
