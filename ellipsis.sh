@@ -30,27 +30,25 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/php
         katharinegillis/firefox
         katharinegillis/sublime
-        katharinegillis/windowsterminal
-        katharinegillis/vcxsrv
         katharinegillis/traefik
         katharinegillis/dnsmasq
     );
 else
     packages=(
         katharinegillis/common
-        katharinegillis/windowsterminal
-        katharinegillis/vcxsrv
-        katharinegillis/firefox
-        katharinegillis/sublime
-        #katharinegillis/dockerdesktop
         katharinegillis/system
-        katharinegillis/git
-        katharinegillis/docker
         katharinegillis/utils
+        katharinegillis/vim
+        katharinegillis/git
+        katharinegillis/phpstorm
+        katharinegillis/docker
         katharinegillis/node
         katharinegillis/php
-        katharinegillis/phpstorm
-        katharinegillis/dev
+        katharinegillis/firefox
+        katharinegillis/sublime
+        katharinegillis/windowsterminal
+        katharinegillis/vcxsrv
+        katharinegillis/adminer
     );
 fi
 
