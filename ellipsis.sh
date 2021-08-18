@@ -29,6 +29,8 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/node
         katharinegillis/php
         katharinegillis/firefox
+        katharinegillis/sublime
+        katharinegillis/windowsterminal
     );
 else
     packages=(
