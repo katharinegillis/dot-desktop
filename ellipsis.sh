@@ -32,6 +32,7 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/sublime
         katharinegillis/windowsterminal
         katharinegillis/vcxsrv
+        katharinegillis/traefik
     );
 else
     packages=(
