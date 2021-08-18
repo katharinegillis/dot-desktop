@@ -33,6 +33,7 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/windowsterminal
         katharinegillis/vcxsrv
         katharinegillis/traefik
+        katharinegillis/dnsmasq
     );
 else
     packages=(
