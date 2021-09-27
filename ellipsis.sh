@@ -90,7 +90,7 @@ pkg.link() {
         touch "$HOME/.bashrc"
     fi
 
-    if ! grep -Fxq "for f in ~/.bash_profile-*; do source \$f; done" "$HOME/.bashrc"; then
+    if ! grep -Fxq "for f in ~/.bashrc-*; do source \$f; done" "$HOME/.bashrc"; then
         {
             echo ""
             echo "for f in ~/.bashrc-*; do source \$f; done"
