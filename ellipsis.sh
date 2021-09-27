@@ -75,17 +75,6 @@ pkg.link() {
     fs.link_rfiles "$PKG_PATH/bin" "$HOME/bin"
 
     # Check for .bashrc loading up the various package profiles
-    if [ ! -f "$HOME/.bash_profile" ]; then
-        touch "$HOME/.bash_profile"
-    fi
-
-    if ! grep -Fxq "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi" "$HOME/.bash_profile"; then
-        {
-            echo ""
-            echo "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi"
-        } >> "$HOME/.bash_profile"
-    fi
-
     if [ ! -f "$HOME/.bashrc" ]; then
         touch "$HOME/.bashrc"
     fi
