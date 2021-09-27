@@ -66,6 +66,16 @@ pkg.install() {
 }
 
 pkg.link() {
+    # For the things that run once on login
+    if [ -f "$HOME/.profile" ] && [ ! -f "$HOME/.profile.original" ]; then
+        mv "$HOME/.profile" "$HOME/.profile.original"
+    fi
+
+    # For the things that run every terminal being opened
+    if [ -f "$HOME/.bashrc" ] && [ ! -f "$HOME/.bashrc.original" ]; then
+        mv "$HOME/.bashrc" "$HOME/.bashrc.original"
+    fi
+
     # Link up the dot files
     fs.link_files files
 
@@ -73,18 +83,6 @@ pkg.link() {
         mkdir "$HOME/bin"
     fi
     fs.link_rfiles "$PKG_PATH/bin" "$HOME/bin"
-
-    # Check for .bashrc loading up the various package profiles
-    if [ ! -f "$HOME/.bashrc" ]; then
-        touch "$HOME/.bashrc"
-    fi
-
-    if ! grep -Fxq "for f in ~/.bashrc-*; do source \$f; done" "$HOME/.bashrc"; then
-        {
-            echo ""
-            echo "for f in ~/.bashrc-*; do source \$f; done"
-        } >> "$HOME/.bashrc"
-    fi
 }
 
 pkg.pull() {
