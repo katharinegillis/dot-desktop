@@ -142,6 +142,7 @@ else
             echo "export ELLIPSIS_USER=katharinegillis"
             echo "export ELLIPSIS_PROTO=ssh"
         } >> "$HOME/.ellipsisrc"
+        source $HOME/.ellipsisrc
     fi
 
     echo "Running the dotfiles..."
