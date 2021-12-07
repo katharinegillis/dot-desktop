@@ -41,14 +41,9 @@ else
         katharinegillis/vim
         katharinegillis/git
         katharinegillis/phpstorm
-        katharinegillis/docker
         katharinegillis/node
         katharinegillis/php
-        katharinegillis/firefox
-        katharinegillis/sublime
-        katharinegillis/windowsterminal
-        katharinegillis/vcxsrv
-        katharinegillis/adminer
+        katharinegillis/terminal
     );
 fi
 
