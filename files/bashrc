@@ -1,5 +1,11 @@
+#!/bin/bash
+echo '.bashrc sourced'
 if [ -f ~/.bashrc.original ]; then
     source ~/.bashrc.original
 fi
 
-for f in ~/.bashrc-*; do source $f; done
+for f in ~/.bashrc-*; do
+	if [ -f "$f" ]; then
+		source $f;
+	fi
+done

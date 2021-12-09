@@ -1,0 +1,9 @@
+# Load in .bashrc if it exists
+if [ -f ~/.bashrc ]; then
+	emulate bash -c "source ~/.bashrc"
+fi
+
+# Load in .profile if it exists and this is a login shell
+if [ -f ~/.profile ] && [[ -o login ]]; then
+	emulate bash -c "source ~/.profile"
+fi

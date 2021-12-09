@@ -1,5 +1,10 @@
+echo '.profile sourced'
 if [ -f ~/.profile.original ]; then
     source ~/.profile.original
 fi
 
-for f in ~/.profile-*; do source $f; done
+for f in ~/.profile-*; do
+	if [ -f "$f" ]; then
+		source $f
+	fi
+done
