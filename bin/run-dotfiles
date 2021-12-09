@@ -41,6 +41,12 @@ else
             echo "Installing homebrew..."
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
+        
+        echo "Checking for mapfile..."
+        if ! command -v "mapfile" &> /dev/null; then
+            echo "Installing mapfile..."
+            zmodload zsh/mapfile
+        fi
     fi
 
     echo "Checking for curl..."
