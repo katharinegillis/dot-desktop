@@ -8,4 +8,9 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# Add Ellipsis' bin to the path
+if [ -d "$HOME/.ellipsis/bin" ]; then
+    PATH="$HOME/.ellipsis/bin:$PATH"
+fi
+
 export PATH=$PATH
