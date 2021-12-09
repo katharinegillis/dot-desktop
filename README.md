@@ -1,1 +1,7 @@
-# Meta package for dotfilesThis is an ellipsis package that acts as a meta package for running my personal dotfiles.## Installation1. Run the bootstrap script `bash -c "$(curl -s https://raw.githubusercontent.com/katharinegillis/dot-desktop/master/bin/run-dotfiles)"`
+# Meta package for dotfiles
+
+This is an ellipsis package that acts as a meta package for running my personal dotfiles.
+
+## Installation
+
+1. Run the bootstrap script `bash -c "$(curl -s -H "Cache-Control: no-cache" https://raw.githubusercontent.com/katharinegillis/dot-desktop/master/bin/run-dotfiles)"`
