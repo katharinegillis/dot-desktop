@@ -47,6 +47,7 @@ else
         katharinegillis/git
         katharinegillis/phpstorm
         katharinegillis/node
+        katharinegillis/serverless
         katharinegillis/php
         katharinegillis/terminal
     );
