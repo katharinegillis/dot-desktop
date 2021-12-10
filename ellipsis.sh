@@ -15,7 +15,10 @@ else
     MODE=$(cat "$HOME/.ellipsis-desktop-mode")
 fi
 
-KERNEL_VERSION=$(cat /proc/version)
+KERNEL_VERSION=""
+if [ -f /proc/version ]; then
+  KERNEL_VERSION=$(cat /proc/version)
+fi
 
 if [ "$MODE" == "home" ]; then
     packages=(
@@ -33,6 +36,8 @@ if [ "$MODE" == "home" ]; then
         katharinegillis/traefik
         katharinegillis/dnsmasq
     );
+
+      export NODE_VERSION="14"
 else
     packages=(
         katharinegillis/common
@@ -45,6 +50,8 @@ else
         katharinegillis/php
         katharinegillis/terminal
     );
+
+      export NODE_VERSION="15.12.0"
 fi
 
 # Store the current package name because it changes in certain circumstances
@@ -122,14 +129,14 @@ installUpdatePackages() {
 	    IFS='/' read -ra packageParsed <<< "$package"
 	    ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}\( \|$\)" > /dev/null; } 2>&1
         if [ "${PIPESTATUS[1]}" -ne 0 ]; then
-            echo -e "\e[32mInstalling $package...\e[0m"
+            printf "\e[32mInstalling $package...\e[0m\n"
             "$ELLIPSIS_PATH/bin/ellipsis" install "$package"
 
             if [ "$?" == "1" ]; then
                 exit 1
             fi
         else
-            echo -e "\e[32mUpdating $package...\e[0m"
+            printf "\e[32mUpdating $package...\e[0m\n"
             "$ELLIPSIS_PATH/bin/ellipsis" pull "${packageParsed[1]}"
 
             if [ "$?" == "1" ]; then
@@ -143,7 +150,7 @@ installUpdatePackages() {
         name=$(pkg.name_from_path "$package")
         echo "${packages[*]}" | { grep "$name" > /dev/null; } 2>&1
         if [ "${PIPESTATUS[1]}" -ne 0 ] && [[ "$name" != "$packageName" ]]; then
-            echo -e "\e[32mUninstalling $package...\e[0m"
+            printf "\e[32mUninstalling $package...\e[0m\n"
             "$ELLIPSIS_PATH/bin/ellipsis" uninstall "$package"
 
             if [ "$?" == "1" ]; then
@@ -164,7 +171,7 @@ removePackages() {
         IFS='/' read -ra packageParsed <<< "$package"
         ellipsis.list_packages | { grep "$ELLIPSIS_PACKAGES/${packageParsed[1]}\( \|$\)" > /dev/null; } 2>&1
         if [ "${PIPESTATUS[1]}" -ne 0 ]; then
-            echo -e "\e[32mUninstalling $package...\e[0m"
+            printf "\e[32mUninstalling $package...\e[0m\n"
             "$ELLIPSIS_PATH/bin/ellipsis" uninstall "${packageParsed[1]}"
 
             if [ "$?" == "1" ]; then
@@ -201,7 +208,7 @@ deleteSummaryFiles() {
 }
 
 printSummary() {
-    echo -e "\n\e[32mSUMMARY\e[0m\n"
+    printf "\n\e[32mSUMMARY\e[0m\n\n"
 
     installed=0
     updated=0
@@ -210,29 +217,29 @@ printSummary() {
     warned=0
 
     if [ -f "$HOME/ellipsis_installed.log" ]; then
-        installed=$(wc -l < "$HOME/ellipsis_installed.log")
+        installed=$(wc -l < "$HOME/ellipsis_installed.log" | sed 's/^ *//g')
     fi
     if [ -f "$HOME/ellipsis_updated.log" ]; then
-        updated=$(wc -l < "$HOME/ellipsis_updated.log")
+        updated=$(wc -l < "$HOME/ellipsis_updated.log" | sed 's/^ *//g')
     fi
     if [ -f "$HOME/ellipsis_uninstalled.log" ]; then
-        uninstalled=$(wc -l < "$HOME/ellipsis_uninstalled.log")
+        uninstalled=$(wc -l < "$HOME/ellipsis_uninstalled.log" | sed 's/^ *//g')
     fi
     if [ -f "$HOME/ellipsis_errored.log" ]; then
-        errored=$(wc -l < "$HOME/ellipsis_errored.log")
+        errored=$(wc -l < "$HOME/ellipsis_errored.log" | sed 's/^ *//g')
     fi
     if [ -f "$HOME/ellipsis_warned.log" ]; then
-        warned=$(wc -l < "$HOME/ellipsis_warned.log")
+        warned=$(wc -l < "$HOME/ellipsis_warned.log" | sed 's/^ *//g')
     fi
 
-    echo -e "\e[32m$installed packages installed"
-    echo -e "\e[32m$updated packages updated"
-    echo -e "\e[32m$uninstalled packages uninstalled\n"
-    echo -e "\e[31m$errored packages errored"
-    echo -e "\e[33m$warned packages issued warnings\n\e[0m"
+    printf "\e[32m$installed packages installed\n"
+    printf "\e[32m$updated packages updated\n"
+    printf "\e[32m$uninstalled packages uninstalled\n\n"
+    printf "\e[31m$errored packages errored\n"
+    printf "\e[33m$warned packages issued warnings\n\e[0m\n"
 
     if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
-        echo -e "If you are installing for the first time, the above counts may be wrong due to having to restart the installation process after a reboot.\n"
+        printf "If you are installing for the first time, the above counts may be wrong due to having to restart the installation process after a reboot.\n\n"
     fi
 
     if [ -f "$HOME/ellipsis_errors.log" ]; then
@@ -244,7 +251,7 @@ printSummary() {
     fi
 
     if [ "$installed" != "0" ] || [ "$updated" != "0" ] || [ "$uninstalled" != "0" ]; then
-        echo -e "\e[33mPlease run \"source .bash_profile\" to refresh profile\e[0m"
+        printf "\e[33mPlease reload the terminal to see the updated changes.\e[0m\n"
     fi
 
     deleteSummaryFiles
