@@ -21,38 +21,13 @@ if [ -f /proc/version ]; then
 fi
 
 if [ "$MODE" == "home" ]; then
-    packages=(
-        katharinegillis/common
-        katharinegillis/system
-        katharinegillis/utils
-        katharinegillis/vim
-        katharinegillis/git
-        katharinegillis/phpstorm
-        katharinegillis/docker
-        katharinegillis/node
-        katharinegillis/php
-        katharinegillis/firefox
-        katharinegillis/sublime
-        katharinegillis/traefik
-        katharinegillis/dnsmasq
-    );
+    mapfile -t packages < "$PKG_PATH/home-package-list.txt"
 
-      export NODE_VERSION="14"
+    export NODE_VERSION="14"
 else
-    packages=(
-        katharinegillis/common
-        katharinegillis/system
-        katharinegillis/utils
-        katharinegillis/vim
-        katharinegillis/git
-        katharinegillis/phpstorm
-        katharinegillis/node
-        katharinegillis/serverless
-        katharinegillis/php
-        katharinegillis/terminal
-    );
+    mapfile -t packages < "$PKG_PATH/work-package-list.txt"
 
-      export NODE_VERSION="15.12.0"
+    export NODE_VERSION="15.12.0"
 fi
 
 # Store the current package name because it changes in certain circumstances
