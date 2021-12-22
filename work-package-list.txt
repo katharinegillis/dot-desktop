@@ -9,3 +9,4 @@ katharinegillis/serverless
 katharinegillis/php
 katharinegillis/terminal
 katharinegillis/aws-assume-role
+katharinegillis/docker
