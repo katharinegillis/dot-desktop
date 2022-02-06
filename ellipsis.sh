@@ -23,10 +23,12 @@ fi
 if [ "$MODE" == "home" ]; then
     mapfile -t packages < "$PKG_PATH/home-package-list.txt"
 
-    export NODE_VERSION="14"
+    export NODE_SETUP_VERSION="16.x"
+    export NODE_VERSION="16.13.2"
 else
     mapfile -t packages < "$PKG_PATH/work-package-list.txt"
 
+    export NODE_SETUP_VERSION="15.x"
     export NODE_VERSION="15.12.0"
 fi
 
