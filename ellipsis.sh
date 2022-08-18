@@ -1,36 +1,15 @@
 #!/usr/bin/env bash
 
-MODE="home"
-if [ ! -f "$HOME/.ellipsis-desktop-mode" ]; then
-    echo "Install home dotfiles or work dotfiles? [home/work]: "
-    read -r var
-    if [ "$var" != "home" ] && [ "$var" != "work" ]; then
-        echo "Invalid selection - please enter home or work on your next attempt. Exiting."
-        exit 1
-    fi
-
-    echo "$var" > "$HOME/.ellipsis-desktop-mode"
-    MODE="$var"
-else
-    MODE=$(cat "$HOME/.ellipsis-desktop-mode")
-fi
-
 KERNEL_VERSION=""
 if [ -f /proc/version ]; then
   KERNEL_VERSION=$(cat /proc/version)
 fi
 
-if [ "$MODE" == "home" ]; then
-    mapfile -t packages < "$PKG_PATH/home-package-list.txt"
 
-    export NODE_SETUP_VERSION="16"
-    export NODE_VERSION="16.13.2"
-else
-    mapfile -t packages < "$PKG_PATH/work-package-list.txt"
+mapfile -t packages < "$PKG_PATH/package-list.txt"
 
-    export NODE_SETUP_VERSION="14"
-    export NODE_VERSION="14.19.0"
-fi
+export NODE_SETUP_VERSION="16"
+export NODE_VERSION="16.13.2"
 
 # Store the current package name because it changes in certain circumstances
 packageName=$PKG_NAME;
