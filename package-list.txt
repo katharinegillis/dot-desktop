@@ -6,6 +6,7 @@ katharinegillis/git
 katharinegillis/phpstorm
 katharinegillis/docker
 katharinegillis/node
+katharinegillis/local-node
 katharinegillis/php
 katharinegillis/firefox
 katharinegillis/sublime
