@@ -8,6 +8,7 @@ katharinegillis/docker
 katharinegillis/node
 katharinegillis/local-node
 katharinegillis/php
+katharinegillis/local-php
 katharinegillis/firefox
 katharinegillis/sublime
 katharinegillis/traefik
