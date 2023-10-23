@@ -9,5 +9,6 @@ katharinegillis/node
 katharinegillis/php
 katharinegillis/firefox
 katharinegillis/sublime
+katharinegillis/discord
 katharinegillis/traefik
 katharinegillis/dnsmasq
