@@ -4,9 +4,11 @@ katharinegillis/utils
 katharinegillis/vim
 katharinegillis/git
 katharinegillis/phpstorm
+katharinegillis/rider
 katharinegillis/docker
 katharinegillis/node
 katharinegillis/php
+katharinegillis/dotnet-core
 katharinegillis/firefox
 katharinegillis/sublime
 katharinegillis/discord
