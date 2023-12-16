@@ -5,6 +5,7 @@ katharinegillis/vim
 katharinegillis/git
 katharinegillis/phpstorm
 katharinegillis/rider
+katharinegillis/datagrip
 katharinegillis/docker
 katharinegillis/node
 katharinegillis/php
