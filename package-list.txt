@@ -3,6 +3,7 @@ katharinegillis/system
 katharinegillis/utils
 katharinegillis/vim
 katharinegillis/git
+katharinegillis/archive-repos
 katharinegillis/phpstorm
 katharinegillis/rider
 katharinegillis/datagrip
